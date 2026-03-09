@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 _SERVER_DIR = os.path.dirname(os.path.abspath(__file__))
 _DATA_DIR = os.environ.get('FILAMENT_TRACKER_DATA_DIR', _SERVER_DIR)
 DB_PATH = os.path.join(_DATA_DIR, 'filament_tracker.db')
-TEST_DB_PATH = os.path.join(_SERVER_DIR, 'filament_tracker_test.db')
+TEST_DB_PATH = os.path.join(_DATA_DIR, 'filament_tracker_test.db')
 
 # Prefix used for synthetic IDs (non-RFID spools)
 SYNTHETIC_ID_PREFIX = "NORFID_"
@@ -685,7 +685,7 @@ def main():
         format='%(asctime)s - %(levelname)s - %(message)s',
         handlers=[
             logging.StreamHandler(),
-            logging.FileHandler('filament_tracker.log')
+            logging.FileHandler(os.path.join(_DATA_DIR, 'filament_tracker.log'))
         ]
     )
 
