@@ -45,7 +45,7 @@ Bambu Printer ──MQTT──> Filament Tracker (Python) ──> Web UI (http:/
 
 ```bash
 # Clone the repo
-git clone https://github.com/YOUR_USERNAME/FilamentTracker.git
+git clone https://github.com/EBTEAM3/FilamentTracker.git
 cd FilamentTracker
 
 # Install dependencies
@@ -215,5 +215,6 @@ FilamentTracker/
 - `config.py` and `filament_tracker.db` are `.gitignore`'d and never committed
 - Never share your Bambu access token — it grants full access to your printer
 - The web UI has no authentication — it's designed for trusted local networks only
+
 
 
