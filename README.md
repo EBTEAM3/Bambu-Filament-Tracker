@@ -1,6 +1,13 @@
 # Filament Tracker
 
-A local-network web dashboard for tracking filament spool usage on Bambu Lab printers. Connects to Bambu Cloud MQTT to monitor your AMS in real time, persists spool history in SQLite, and serves a clean web UI accessible from any device on your network.
+A local-network web dashboard for tracking filament spool usage on Bambu Lab printers. Connects to Bambu Cloud MQTT to monitor your AMS in real time, persists spool history in SQLite including remaining fillament, and serves a clean web UI accessible from any device on your network.
+
+## Pictures
+
+<img width="2550" height="1287" alt="Screenshot 2026-03-09 175327" src="https://github.com/user-attachments/assets/43d4736e-9fa8-4f49-82fb-b66c7b9a9747" />
+<img width="1739" height="386" alt="Screenshot 2026-03-08 140504" src="https://github.com/user-attachments/assets/599e8883-7ad9-4ffc-90e9-bd2ab6eae46b" />
+<img width="658" height="1105" alt="Screenshot 2026-03-09 175349" src="https://github.com/user-attachments/assets/253a99f6-eb8f-4463-975c-00ec768a2d82" />
+
 
 ## How It Works
 
@@ -209,6 +216,4 @@ FilamentTracker/
 - Never share your Bambu access token — it grants full access to your printer
 - The web UI has no authentication — it's designed for trusted local networks only
 
-## License
 
-MIT
