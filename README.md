@@ -25,7 +25,8 @@ Bambu Printer ──MQTT──> Filament Tracker (Python) ──> Web UI (http:/
 - **Non-RFID spool support** — third-party spools without RFID tags are detected and tracked
 - **Custom names & notes** — label your spools and add notes via the web UI
 - **Test mode** — preview the full UI with mock data, no printer or MQTT needed
-- **Standalone or integrated** — runs on its own, or alongside [BambuNowBar](https://github.com/YOUR_USERNAME/BambuNowBar) sharing a single MQTT connection
+- **Docker support** — single-command deployment with persistent database volume
+- **Standalone or integrated** — runs on its own, or alongside [BambuNowBar](https://github.com/EBTEAM3/BambuNowBar) sharing a single MQTT connection
 
 ## Requirements
 
@@ -36,9 +37,35 @@ Bambu Printer ──MQTT──> Filament Tracker (Python) ──> Web UI (http:/
 
 ## Quick Start
 
+### Option A: Docker (Recommended)
+
 ```bash
-# Clone the repo
-git clone https://github.com/YOUR_USERNAME/FilamentTracker.git
+git clone https://github.com/EBTEAM3/Bambu-Filament-Tracker.git
+cd FilamentTracker
+
+# Create your config
+cp config.example.py config.py
+nano config.py  # fill in your Bambu credentials
+
+# Build and run
+docker build -t filament-tracker .
+docker run -d \
+  --name filament-tracker \
+  --restart unless-stopped \
+  -p 5000:5000 \
+  -v "$(pwd)/config.py:/app/config.py" \
+  -v filament-tracker-db:/app/data \
+  filament-tracker
+```
+
+> **Windows PowerShell**: Replace `$(pwd)` with `${PWD}` or use the full path to `config.py`.
+
+The database is stored in a Docker volume so it persists across container restarts.
+
+### Option B: Manual Python Setup
+
+```bash
+git clone https://github.com/EBTEAM3/Bambu-Filament-Tracker.git
 cd FilamentTracker
 
 # Install dependencies
@@ -60,7 +87,7 @@ python3 get_credentials.py
 
 This will prompt for your Bambu Lab email and password, handle 2FA, and output your credentials ready to paste into `config.py`.
 
-Alternatively, find them manually in Bambu Studio's config files — see the [BambuNowBar README](https://github.com/YOUR_USERNAME/BambuNowBar#part-1-finding-your-bambu-credentials) for details.
+Alternatively, find them manually in Bambu Studio's config files — see the [BambuNowBar README](https://github.com/EBTEAM3/BambuNowBar#part-1-finding-your-bambu-credentials) for details.
 
 ### Configure
 
@@ -107,7 +134,7 @@ The offset is stored per spool ID and applied to all weight calculations, includ
 
 ## BambuNowBar Integration (Optional)
 
-If you also use [BambuNowBar](https://github.com/YOUR_USERNAME/BambuNowBar) for push notifications, you can run both services on a single MQTT connection.
+If you also use [BambuNowBar](https://github.com/EBTEAM3/BambuNowBar) for push notifications, you can run both services on a single MQTT connection.
 
 Clone both repos as sibling folders:
 
@@ -157,7 +184,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=YOUR_USERNAME
-WorkingDirectory=/home/YOUR_USERNAME/FilamentTracker
+WorkingDirectory=/home/EBTEAM3/Bambu-Filament-Tracker
 ExecStart=/usr/bin/python3 filament_tracker.py
 Restart=always
 RestartSec=10
@@ -183,6 +210,8 @@ FilamentTracker/
 ├── config.example.py         # Configuration template
 ├── config.py                 # Your config (NOT in repo)
 ├── requirements.txt          # Python dependencies
+├── Dockerfile                # Docker container build
+├── .dockerignore             # Files excluded from Docker image
 ├── templates/
 │   └── index.html            # Web UI template
 ├── static/

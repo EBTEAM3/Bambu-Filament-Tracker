@@ -1,0 +1,14 @@
+config.py
+*.db
+*.log
+__pycache__/
+*.pyc
+.git/
+.gitignore
+.dockerignore
+Dockerfile
+README.md
+venv/
+.venv/
+firebase-service-account.json
+AuthKey_*.p8
