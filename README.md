@@ -52,7 +52,7 @@ Pull the pre-built image from [Docker Hub](https://hub.docker.com/r/ebteam/filam
 
 ```bash
 # Download the example config and fill in your Bambu credentials
-curl -O https://raw.githubusercontent.com/EBTEAM3/FilamentTracker/main/config.example.py
+curl -O https://raw.githubusercontent.com/EBTEAM3/Bambu-Filament-Tracker/main/config.example.py
 cp config.example.py config.py
 nano config.py  # fill in your Bambu credentials
 
