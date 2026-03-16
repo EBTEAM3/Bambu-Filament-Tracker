@@ -1,102 +1,153 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% if api_key %}<meta name="api-key" content="{{ api_key }}">{% endif %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% if api_key %}
+    <meta name="api-key" content="{{ api_key }}" />
+    {% endif %}
     <title>Filament Tracker</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js" integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ" crossorigin="anonymous"></script>
-</head>
-<body>
-
-<!-- Header -->
-<header class="header">
-    <div class="header-inner">
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"
+      integrity="sha384-jb8JQMbMoBUzgWatfe6COACi2ljcDdZQ2OxczGA3bGNeWe+6DChMTBJemed7ZnvJ"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header-inner">
         <div class="header-title">
-            <div class="spool-logo"></div>
-            <h1>Filament Tracker</h1>
-            {% if test_mode %}
-            <span class="test-badge">Test Mode</span>
-            {% endif %}
+          <div class="spool-logo"></div>
+          <h1>Filament Tracker</h1>
+          {% if test_mode %}
+          <span class="test-badge">Test Mode</span>
+          {% endif %}
         </div>
         <div class="header-status">
-            <div>
-                <span class="status-dot disconnected" id="status-dot"></span>
-                <span id="status-label">Connecting...</span>
+          <div>
+            <span class="status-dot disconnected" id="status-dot"></span>
+            <span id="status-label">Connecting...</span>
+          </div>
+          <div id="ams-env" class="ams-env"></div>
+          <div class="print-progress" id="print-info" style="display: none">
+            <span id="print-job-name"></span>
+            <span id="print-percent"></span>
+            <div class="print-progress-bar">
+              <div
+                class="print-progress-bar-fill"
+                id="print-bar-fill"
+                style="width: 0%"
+              ></div>
             </div>
-            <div id="ams-env" class="ams-env"></div>
-            <div class="print-progress" id="print-info" style="display:none;">
-                <span id="print-job-name"></span>
-                <span id="print-percent"></span>
-                <div class="print-progress-bar">
-                    <div class="print-progress-bar-fill" id="print-bar-fill" style="width:0%"></div>
-                </div>
-            </div>
+          </div>
         </div>
-    </div>
-</header>
+      </div>
+    </header>
 
-<!-- Main Content -->
-<main class="container">
-    <!-- Currently Loaded -->
-    <section class="ams-section">
+    <!-- Main Content -->
+    <main class="container">
+      <section class="dashboard-overview">
+        <article class="overview-card" id="printer-overview-card">
+          <h2 class="section-title">Printer Overview</h2>
+          <div class="overview-grid" id="printer-overview-grid">
+            <p class="loading">Loading...</p>
+          </div>
+        </article>
+
+        <article class="overview-card" id="ams-overview-card">
+          <h2 class="section-title">AMS Overview</h2>
+          <div class="overview-grid" id="ams-overview-grid">
+            <p class="loading">Loading...</p>
+          </div>
+          <p class="overview-note" id="ams-overview-note"></p>
+        </article>
+      </section>
+
+      <section class="jobs-section">
+        <h2 class="section-title">Recent Jobs</h2>
+        <div class="jobs-list" id="jobs-list">
+          <p class="loading">Loading...</p>
+        </div>
+      </section>
+
+      <!-- Currently Loaded -->
+      <section class="ams-section">
         <h2 class="section-title">Currently Loaded</h2>
         <div id="ams-container">
-            <p class="loading">Loading...</p>
+          <p class="loading">Loading...</p>
         </div>
-    </section>
+      </section>
 
-    <!-- Two-column: Inventory + Alerts -->
-    <div class="main-columns">
+      <!-- Two-column: Inventory + Alerts -->
+      <div class="main-columns">
         <!-- All Spools (Left) -->
         <section class="inventory-section">
-            <div class="inventory-header">
-                <h2 class="section-title">All Spools</h2>
-                <div class="sort-controls">
-                    <label for="sort-select">Sort:</label>
-                    <select id="sort-select">
-                        <option value="last_seen">Last Seen</option>
-                        <option value="weight_asc">Weight (Low to High)</option>
-                        <option value="weight_desc">Weight (High to Low)</option>
-                        <option value="percent_asc">% Remaining (Low to High)</option>
-                        <option value="percent_desc">% Remaining (High to Low)</option>
-                        <option value="material">Material Type</option>
-                        <option value="name">Name</option>
-                    </select>
-                </div>
+          <div class="inventory-header">
+            <h2 class="section-title">All Spools</h2>
+            <div class="sort-controls">
+              <label for="sort-select">Sort:</label>
+              <select id="sort-select">
+                <option value="last_seen">Last Seen</option>
+                <option value="weight_asc">Weight (Low to High)</option>
+                <option value="weight_desc">Weight (High to Low)</option>
+                <option value="percent_asc">% Remaining (Low to High)</option>
+                <option value="percent_desc">% Remaining (High to Low)</option>
+                <option value="material">Material Type</option>
+                <option value="name">Name</option>
+              </select>
             </div>
-            <div class="inventory-grid" id="inventory-grid">
-                <p class="loading">Loading...</p>
-            </div>
+          </div>
+          <div class="inventory-grid" id="inventory-grid">
+            <p class="loading">Loading...</p>
+          </div>
         </section>
 
         <!-- Alerts Panel (Right) -->
         <aside class="alerts-panel" id="alerts-panel">
-            <h2 class="section-title">Alerts</h2>
-            <div class="threshold-setting">
-                <label for="threshold-input">Low stock threshold:</label>
-                <div class="threshold-input-row">
-                    <input type="number" id="threshold-input" min="0" step="10" value="150">
-                    <span class="threshold-unit">g</span>
-                    <button class="threshold-save-btn" id="threshold-save" title="Save">Save</button>
-                </div>
+          <h2 class="section-title">Alerts</h2>
+          <div class="threshold-setting">
+            <label for="threshold-input">Low stock threshold:</label>
+            <div class="threshold-input-row">
+              <input
+                type="number"
+                id="threshold-input"
+                min="0"
+                step="10"
+                value="150"
+              />
+              <span class="threshold-unit">g</span>
+              <button
+                class="threshold-save-btn"
+                id="threshold-save"
+                title="Save"
+              >
+                Save
+              </button>
             </div>
-            <div id="alerts-list" class="alerts-list">
-                <p class="alerts-empty">No low stock alerts</p>
-            </div>
+          </div>
+          <div id="alerts-list" class="alerts-list">
+            <p class="alerts-empty">No low stock alerts</p>
+          </div>
         </aside>
+      </div>
+    </main>
+
+    <!-- Spool Detail Modal -->
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal" id="modal-content"></div>
     </div>
-</main>
 
-<!-- Spool Detail Modal -->
-<div class="modal-overlay" id="modal-overlay">
-    <div class="modal" id="modal-content"></div>
-</div>
-
-<script src="{{ url_for('static', filename='app.js') }}"></script>
-</body>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
 </html>

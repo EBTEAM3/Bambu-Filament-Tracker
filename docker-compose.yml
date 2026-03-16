@@ -1,0 +1,25 @@
+services:
+  filament-tracker:
+    build: .
+    container_name: filament-tracker
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-5000}:${APP_PORT:-5000}"
+    environment:
+      APP_PORT: ${APP_PORT:-5000}
+      APP_HOST: 0.0.0.0
+      FILAMENT_TRACKER_DATA_DIR: /app/data
+      AUTH_ENABLED: ${AUTH_ENABLED:-1}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD_HASH: ${ADMIN_PASSWORD_HASH:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
+      SECRET_KEY: ${SECRET_KEY:-change-me-in-production}
+      TIMEZONE: ${TIMEZONE:-UTC}
+      FILAMENT_TRACKER_API_KEY: ${FILAMENT_TRACKER_API_KEY:-}
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+    volumes:
+      - filament_tracker_data:/app/data
+      - ./config:/app/config
+
+volumes:
+  filament_tracker_data:

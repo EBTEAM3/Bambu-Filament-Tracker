@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Filament Tracker Login</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <main class="login-wrapper">
+      <section class="login-card">
+        <h1>Filament Tracker</h1>
+        <p class="login-subtitle">
+          Inicia sesión para acceder al inventario y calibraciones.
+        </p>
+        <form id="login-form" class="login-form">
+          <label for="username">Usuario</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            required
+            autocomplete="username"
+          />
+
+          <label for="password">Contraseña</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            required
+            autocomplete="current-password"
+          />
+
+          <button type="submit" class="save-btn">Entrar</button>
+          <p id="login-error" class="login-error"></p>
+        </form>
+      </section>
+    </main>
+    <script src="{{ url_for('static', filename='login.js') }}"></script>
+  </body>
+</html>

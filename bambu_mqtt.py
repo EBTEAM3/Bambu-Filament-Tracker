@@ -19,7 +19,7 @@ import json
 import ssl
 import time
 import logging
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Optional, Callable, List
 
 import paho.mqtt.client as mqtt
@@ -147,6 +147,9 @@ class PrinterState:
         self.bed_temp: int = 0
         self.bed_target_temp: int = 0
         self.chamber_temp: int = 0
+        self.last_update_at: str = ""
+        self.last_error_code: str = ""
+        self.last_failure_reason: str = ""
 
 
 class BambuMQTTClient:
@@ -314,6 +317,40 @@ class BambuMQTTClient:
             self.state.stg_cur = print_data["stg_cur"]
             updated = True
 
+        # Optional error/failure fields (firmware/model dependent).
+        # We only store values when they are present in payload.
+        error_code = (
+            print_data.get("print_error")
+            or print_data.get("error_code")
+            or print_data.get("err_code")
+        )
+        if error_code not in (None, ""):
+            self.state.last_error_code = str(error_code)
+            updated = True
+
+        fail_reason = (
+            print_data.get("fail_reason")
+            or print_data.get("cancel_reason")
+            or print_data.get("completion_reason")
+            or print_data.get("reason")
+        )
+        if fail_reason not in (None, ""):
+            self.state.last_failure_reason = str(fail_reason)
+            updated = True
+
+        hms_value = print_data.get("hms")
+        if isinstance(hms_value, list) and hms_value:
+            first_hms = hms_value[0]
+            if isinstance(first_hms, dict):
+                hms_code = first_hms.get("code") or first_hms.get("err_code")
+                hms_msg = first_hms.get("msg") or first_hms.get("desc")
+                if hms_code not in (None, ""):
+                    self.state.last_error_code = str(hms_code)
+                    updated = True
+                if hms_msg not in (None, ""):
+                    self.state.last_failure_reason = str(hms_msg)
+                    updated = True
+
         if "subtask_name" in print_data:
             self.state.job_name = print_data["subtask_name"]
             updated = True
@@ -334,6 +371,9 @@ class BambuMQTTClient:
             if "total_layer_num" in print_data["3D"]:
                 self.state.total_layers = print_data["3D"]["total_layer_num"]
                 updated = True
+
+        if updated:
+            self.state.last_update_at = datetime.now(timezone.utc).replace(tzinfo=None).isoformat()
 
         return updated
 
